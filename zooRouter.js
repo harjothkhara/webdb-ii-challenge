@@ -61,11 +61,28 @@ router.get("/:id", async (req, res) => {
 });
 
 //PUT (UPDATE)
-router.put("/:id"), async (req, res) => {
+router.put("/:id", async (req, res) => {
    const { id } = req.params;
    const newZoo = req.body;
 
-}
+   if (!newZoo.name) {
+       res.status(400).json({ message: "Please enter a valid zoo name" });
+   } else {
+       try {
+           const editedZoo = await db ("zoos")
+            .where ({ id })
+            .update(newZoo);
+           if (editedZoo) {
+               const zoo = await db ("zoos")
+                .where({ id })
+                .first();
+            res.status(200).json(zoo);
+           } 
+       } catch(error) {
+           res.status(404).json({ message: "Zoo with specified ID does not exist" })
+       }
+   }
+});
 
 //DELETE (DELETE)
 router.delete("/:id", async (req, res) => {
