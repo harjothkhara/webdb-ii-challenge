@@ -18,17 +18,21 @@ const db = knex(knexConfig); //defining database
 //POST (CREATE)
 router.post("/", async (req, res) => {
     const zoo = req.body;
-    try {
-        const [id] = await db("zoos").insert(zoo);
-        if (id) {
-            const newZoo = await db("zoos")
-            .where({ id })
-            .first();
-            res.status(201).json(newZoo);
-        } 
-    } catch(error) {
-        res.status(500).json ({ message: `Your zoo could not be posted ${error}` });
-    }
+    if (!zoo.name) {
+        res.status(400).json({ message: "Please enter a valid zoo name" });
+    } else {
+        try {
+            const [id] = await db("zoos").insert(zoo);
+            if (id) {
+                const newZoo = await db("zoos")
+                .where({ id })
+                .first();
+                res.status(201).json(newZoo);
+            } 
+        } catch(error) {
+            res.status(500).json ({ message: `Your zoo could not be posted ${error}` });
+        }
+    }    
 });
 
 //GET (READ)
