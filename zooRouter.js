@@ -16,10 +16,20 @@ const db = knex(knexConfig); //defining database
 // CRUD endpoints
 
 //POST (CREATE)
-router.post("/"), async (req, res) => {
-    const newZoo = req.body;
-   
-}
+router.post("/", async (req, res) => {
+    const zoo = req.body;
+    try {
+        const [id] = await db("zoos").insert(zoo);
+        if (id) {
+            const newZoo = await db("zoos")
+            .where({ id })
+            .first();
+            res.status(201).json(newZoo);
+        } 
+    } catch(error) {
+        res.status(500).json ({ message: `Your zoo could not be posted ${error}` });
+    }
+});
 
 //GET (READ)
 router.get("/", async (req, res) => {
@@ -58,10 +68,24 @@ router.put("/:id"), async (req, res) => {
 }
 
 //DELETE (DELETE)
-router.delete("/:id"), async (req, res) => {
+router.delete("/:id", async (req, res) => {
    const { id } = req.params;
-}
-
+   try {
+       const zoo = await db("zoos")
+       .where({ id })
+       .first();
+    if (zoo) {
+        const deleted = await db("zoos")
+        .where({ id })
+        .del();
+    if (deleted) {
+        res.status(200).json(zoo);
+      }
+    }
+   } catch(error) {
+       res.status(404).json({ message: "Zoo with specified ID does not exist" });
+   }
+});
 
 module.exports = router;
 
