@@ -1,12 +1,13 @@
 const express = require('express');
 const helmet = require('helmet');
-const zooRouter = require ('./zooRouter.js');
 
 const server = express(); //setting up server
 
+const zooRouter = require ('./zooRouter.js');
+
 //middleware
-server.use(express.json());
-server.use(helmet());
+server.use(helmet()); //security - hides express in postman
+server.use(express.json()); //built-in: parses body into json format
 
 // endpoints here
 server.use("/api/zoos", zooRouter);
